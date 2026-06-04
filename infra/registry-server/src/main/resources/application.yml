@@ -1,0 +1,23 @@
+server:
+  port: 7081
+
+spring:
+  application:
+    name: registry-server
+
+eureka:
+  instance:
+    hostname: registry-server
+  client:
+    register-with-eureka: false
+    fetch-registry: false
+    service-url:
+      defaultZone: http://localhost:7081/eureka/
+  server:
+    enable-self-preservation: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info

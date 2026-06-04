@@ -1,0 +1,406 @@
+name: nevoa-distribuido
+
+services:
+  config-server:
+    build: ./infra/config-server
+    container_name: nevoa-config-server
+    restart: unless-stopped
+    environment:
+      CONFIG_REPO_LOCATION: file:/config-repo
+    ports:
+      - "7071:7071"
+    volumes:
+      - ./infra/config-repo:/config-repo:ro
+    networks:
+      - ms-net
+
+  registry-server:
+    build: ./infra/registry-server
+    container_name: nevoa-registry-server
+    restart: unless-stopped
+    ports:
+      - "7081:7081"
+    networks:
+      - ms-net
+
+  gateway-server:
+    build: ./infra/gateway-server
+    container_name: nevoa-gateway-server
+    restart: unless-stopped
+    depends_on:
+      config-server:
+        condition: service_started
+      registry-server:
+        condition: service_started
+    environment:
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
+      CONFIG_SERVER_URL: ${CONFIG_SERVER_URL}
+      EUREKA_SERVER_URL: ${EUREKA_SERVER_URL}
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://registry-server:7081/eureka/
+    ports:
+      - "7091:7091"
+    networks:
+      - ms-net
+
+
+  mysql-usuario:
+    image: mysql:8.4
+    container_name: nevoa-mysql-usuario
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${USUARIO_MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${USUARIO_MYSQL_DATABASE}
+    ports:
+      - "3311:3306"
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -p${USUARIO_MYSQL_ROOT_PASSWORD} || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    volumes:
+      - mysql_usuario_data:/var/lib/mysql
+    networks:
+      - ms-net
+
+  usuario-service:
+    build: ./services/usuario-service
+    restart: unless-stopped
+    depends_on:
+      mysql-usuario:
+        condition: service_healthy
+      config-server:
+        condition: service_started
+      registry-server:
+        condition: service_started
+    environment:
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
+      CONFIG_SERVER_URL: ${CONFIG_SERVER_URL}
+      EUREKA_SERVER_URL: ${EUREKA_SERVER_URL}
+      USUARIO_DB_HOST: ${USUARIO_DB_HOST}
+      USUARIO_DB_PORT: ${USUARIO_DB_PORT}
+      USUARIO_DB_NAME: ${USUARIO_DB_NAME}
+      USUARIO_DB_USERNAME: ${USUARIO_DB_USERNAME}
+      USUARIO_DB_PASSWORD: ${USUARIO_DB_PASSWORD}
+    ports:
+      - "8081:8081"
+    expose:
+      - "8081"
+    networks:
+      - ms-net
+
+
+  mysql-tarea:
+    image: mysql:8.4
+    container_name: nevoa-mysql-tarea
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${TAREA_MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${TAREA_MYSQL_DATABASE}
+    ports:
+      - "3312:3306"
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -p${TAREA_MYSQL_ROOT_PASSWORD} || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    volumes:
+      - mysql_tarea_data:/var/lib/mysql
+    networks:
+      - ms-net
+
+  tarea-service:
+    build: ./services/tarea-service
+    restart: unless-stopped
+    depends_on:
+      mysql-tarea:
+        condition: service_healthy
+      config-server:
+        condition: service_started
+      registry-server:
+        condition: service_started
+    environment:
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
+      CONFIG_SERVER_URL: ${CONFIG_SERVER_URL}
+      EUREKA_SERVER_URL: ${EUREKA_SERVER_URL}
+      TAREA_DB_HOST: ${TAREA_DB_HOST}
+      TAREA_DB_PORT: ${TAREA_DB_PORT}
+      TAREA_DB_NAME: ${TAREA_DB_NAME}
+      TAREA_DB_USERNAME: ${TAREA_DB_USERNAME}
+      TAREA_DB_PASSWORD: ${TAREA_DB_PASSWORD}
+    ports:
+      - "8082:8082"
+    expose:
+      - "8082"
+    networks:
+      - ms-net
+
+
+  mysql-proyecto:
+    image: mysql:8.4
+    container_name: nevoa-mysql-proyecto
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${PROYECTO_MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${PROYECTO_MYSQL_DATABASE}
+    ports:
+      - "3313:3306"
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -p${PROYECTO_MYSQL_ROOT_PASSWORD} || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    volumes:
+      - mysql_proyecto_data:/var/lib/mysql
+    networks:
+      - ms-net
+
+  proyecto-service:
+    build: ./services/proyecto-service
+    restart: unless-stopped
+    depends_on:
+      mysql-proyecto:
+        condition: service_healthy
+      config-server:
+        condition: service_started
+      registry-server:
+        condition: service_started
+    environment:
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
+      CONFIG_SERVER_URL: ${CONFIG_SERVER_URL}
+      EUREKA_SERVER_URL: ${EUREKA_SERVER_URL}
+      PROYECTO_DB_HOST: ${PROYECTO_DB_HOST}
+      PROYECTO_DB_PORT: ${PROYECTO_DB_PORT}
+      PROYECTO_DB_NAME: ${PROYECTO_DB_NAME}
+      PROYECTO_DB_USERNAME: ${PROYECTO_DB_USERNAME}
+      PROYECTO_DB_PASSWORD: ${PROYECTO_DB_PASSWORD}
+    ports:
+      - "8083:8083"
+    expose:
+      - "8083"
+    networks:
+      - ms-net
+
+
+  mysql-nota:
+    image: mysql:8.4
+    container_name: nevoa-mysql-nota
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${NOTA_MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${NOTA_MYSQL_DATABASE}
+    ports:
+      - "3314:3306"
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -p${NOTA_MYSQL_ROOT_PASSWORD} || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    volumes:
+      - mysql_nota_data:/var/lib/mysql
+    networks:
+      - ms-net
+
+  nota-service:
+    build: ./services/nota-service
+    restart: unless-stopped
+    depends_on:
+      mysql-nota:
+        condition: service_healthy
+      config-server:
+        condition: service_started
+      registry-server:
+        condition: service_started
+    environment:
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
+      CONFIG_SERVER_URL: ${CONFIG_SERVER_URL}
+      EUREKA_SERVER_URL: ${EUREKA_SERVER_URL}
+      NOTA_DB_HOST: ${NOTA_DB_HOST}
+      NOTA_DB_PORT: ${NOTA_DB_PORT}
+      NOTA_DB_NAME: ${NOTA_DB_NAME}
+      NOTA_DB_USERNAME: ${NOTA_DB_USERNAME}
+      NOTA_DB_PASSWORD: ${NOTA_DB_PASSWORD}
+    ports:
+      - "8084:8084"
+    expose:
+      - "8084"
+    networks:
+      - ms-net
+
+
+  mysql-meta:
+    image: mysql:8.4
+    container_name: nevoa-mysql-meta
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${META_MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${META_MYSQL_DATABASE}
+    ports:
+      - "3315:3306"
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -p${META_MYSQL_ROOT_PASSWORD} || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    volumes:
+      - mysql_meta_data:/var/lib/mysql
+    networks:
+      - ms-net
+
+  meta-service:
+    build: ./services/meta-service
+    restart: unless-stopped
+    depends_on:
+      mysql-meta:
+        condition: service_healthy
+      config-server:
+        condition: service_started
+      registry-server:
+        condition: service_started
+    environment:
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
+      CONFIG_SERVER_URL: ${CONFIG_SERVER_URL}
+      EUREKA_SERVER_URL: ${EUREKA_SERVER_URL}
+      META_DB_HOST: ${META_DB_HOST}
+      META_DB_PORT: ${META_DB_PORT}
+      META_DB_NAME: ${META_DB_NAME}
+      META_DB_USERNAME: ${META_DB_USERNAME}
+      META_DB_PASSWORD: ${META_DB_PASSWORD}
+    ports:
+      - "8085:8085"
+    expose:
+      - "8085"
+    networks:
+      - ms-net
+
+
+  mysql-habito:
+    image: mysql:8.4
+    container_name: nevoa-mysql-habito
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${HABITO_MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${HABITO_MYSQL_DATABASE}
+    ports:
+      - "3316:3306"
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -p${HABITO_MYSQL_ROOT_PASSWORD} || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    volumes:
+      - mysql_habito_data:/var/lib/mysql
+    networks:
+      - ms-net
+
+  habito-service:
+    build: ./services/habito-service
+    restart: unless-stopped
+    depends_on:
+      mysql-habito:
+        condition: service_healthy
+      config-server:
+        condition: service_started
+      registry-server:
+        condition: service_started
+    environment:
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
+      CONFIG_SERVER_URL: ${CONFIG_SERVER_URL}
+      EUREKA_SERVER_URL: ${EUREKA_SERVER_URL}
+      HABITO_DB_HOST: ${HABITO_DB_HOST}
+      HABITO_DB_PORT: ${HABITO_DB_PORT}
+      HABITO_DB_NAME: ${HABITO_DB_NAME}
+      HABITO_DB_USERNAME: ${HABITO_DB_USERNAME}
+      HABITO_DB_PASSWORD: ${HABITO_DB_PASSWORD}
+    ports:
+      - "8086:8086"
+    expose:
+      - "8086"
+    networks:
+      - ms-net
+
+
+  mysql-pomodoro:
+    image: mysql:8.4
+    container_name: nevoa-mysql-pomodoro
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${POMODORO_MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${POMODORO_MYSQL_DATABASE}
+    ports:
+      - "3317:3306"
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -p${POMODORO_MYSQL_ROOT_PASSWORD} || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    volumes:
+      - mysql_pomodoro_data:/var/lib/mysql
+    networks:
+      - ms-net
+
+  pomodoro-service:
+    build: ./services/pomodoro-service
+    restart: unless-stopped
+    depends_on:
+      mysql-pomodoro:
+        condition: service_healthy
+      config-server:
+        condition: service_started
+      registry-server:
+        condition: service_started
+    environment:
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
+      CONFIG_SERVER_URL: ${CONFIG_SERVER_URL}
+      EUREKA_SERVER_URL: ${EUREKA_SERVER_URL}
+      POMODORO_DB_HOST: ${POMODORO_DB_HOST}
+      POMODORO_DB_PORT: ${POMODORO_DB_PORT}
+      POMODORO_DB_NAME: ${POMODORO_DB_NAME}
+      POMODORO_DB_USERNAME: ${POMODORO_DB_USERNAME}
+      POMODORO_DB_PASSWORD: ${POMODORO_DB_PASSWORD}
+    ports:
+      - "8087:8087"
+    expose:
+      - "8087"
+    networks:
+      - ms-net
+
+
+  dashboard-service:
+    build: ./services/dashboard-service
+    restart: unless-stopped
+    depends_on:
+      config-server:
+        condition: service_started
+      registry-server:
+        condition: service_started
+    environment:
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
+      CONFIG_SERVER_URL: ${CONFIG_SERVER_URL}
+      EUREKA_SERVER_URL: ${EUREKA_SERVER_URL}
+    ports:
+      - "8088:8088"
+    expose:
+      - "8088"
+    networks:
+      - ms-net
+
+volumes:
+  mysql_usuario_data:
+  mysql_tarea_data:
+  mysql_proyecto_data:
+  mysql_nota_data:
+  mysql_meta_data:
+  mysql_habito_data:
+  mysql_pomodoro_data:
+
+networks:
+  ms-net:
+    external: true
+    name: ms-net
