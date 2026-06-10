@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Névoa - Sistema distribuido de productividad personal
 
 Névoa es una plataforma distribuida para organizar productividad personal mediante usuarios, tareas, proyectos, notas, metas, hábitos, sesiones Pomodoro y un dashboard resumen. La solución está preparada para la Unidad 1 de Desarrollo de Aplicaciones Distribuidas: configuración externa, descubrimiento de servicios, API Gateway, bases de datos independientes, Docker y preparación para múltiples instancias.
@@ -176,3 +177,6 @@ Los recursos funcionales se manejan por usuario mediante rutas recomendadas como
 ```
 
 Ver mas detalles en `docs/SWAGGER_Y_USUARIOS.md`.
+=======
+# Microservicios_Nevoa
+>>>>>>> 37ac217f65a6d0788accb9b913cfc6b54bc22f2b
