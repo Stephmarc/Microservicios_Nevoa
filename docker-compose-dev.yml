@@ -1,0 +1,95 @@
+name: nevoa-dev-databases
+
+services:
+
+  mysql-usuario-dev:
+    image: mysql:8.4
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: db_nevoa_usuario
+    ports:
+      - "3311:3306"
+    volumes:
+      - mysql_usuario_dev_data:/var/lib/mysql
+
+
+  mysql-tarea-dev:
+    image: mysql:8.4
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: db_nevoa_tarea
+    ports:
+      - "3312:3306"
+    volumes:
+      - mysql_tarea_dev_data:/var/lib/mysql
+
+
+  mysql-proyecto-dev:
+    image: mysql:8.4
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: db_nevoa_proyecto
+    ports:
+      - "3313:3306"
+    volumes:
+      - mysql_proyecto_dev_data:/var/lib/mysql
+
+
+  mysql-nota-dev:
+    image: mysql:8.4
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: db_nevoa_nota
+    ports:
+      - "3314:3306"
+    volumes:
+      - mysql_nota_dev_data:/var/lib/mysql
+
+
+  mysql-meta-dev:
+    image: mysql:8.4
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: db_nevoa_meta
+    ports:
+      - "3315:3306"
+    volumes:
+      - mysql_meta_dev_data:/var/lib/mysql
+
+
+  mysql-habito-dev:
+    image: mysql:8.4
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: db_nevoa_habito
+    ports:
+      - "3316:3306"
+    volumes:
+      - mysql_habito_dev_data:/var/lib/mysql
+
+
+  mysql-pomodoro-dev:
+    image: mysql:8.4
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: db_nevoa_pomodoro
+    ports:
+      - "3317:3306"
+    volumes:
+      - mysql_pomodoro_dev_data:/var/lib/mysql
+
+volumes:
+  mysql_usuario_dev_data:
+  mysql_tarea_dev_data:
+  mysql_proyecto_dev_data:
+  mysql_nota_dev_data:
+  mysql_meta_dev_data:
+  mysql_habito_dev_data:
+  mysql_pomodoro_dev_data:

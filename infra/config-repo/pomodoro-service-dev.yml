@@ -1,0 +1,39 @@
+server:
+  port: 8087
+
+spring:
+  datasource:
+    url: jdbc:mysql://${POMODORO_DB_HOST:localhost}:${POMODORO_DB_PORT:3317}/${POMODORO_DB_NAME:db_nevoa_pomodoro}?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    username: ${POMODORO_DB_USERNAME:root}
+    password: ${POMODORO_DB_PASSWORD:root}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+  flyway:
+    enabled: false
+    locations: classpath:db/migration
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_SERVER_URL:http://localhost:7081/eureka/}
+  instance:
+    prefer-ip-address: true
+
+springdoc:
+  api-docs:
+    enabled: true
+    path: /v3/api-docs
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info

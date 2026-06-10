@@ -1,0 +1,153 @@
+server:
+  port: 7091
+
+spring:
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+      routes:
+
+        - id: usuarios-route-1
+          uri: lb://usuario-service
+          predicates:
+            - Path=/api/v1/usuarios/**
+
+        - id: auth-route-2
+          uri: lb://usuario-service
+          predicates:
+            - Path=/api/v1/auth/**
+
+        - id: tareas-route-3
+          uri: lb://tarea-service
+          predicates:
+            - Path=/api/v1/tareas/**
+
+        - id: proyectos-route-4
+          uri: lb://proyecto-service
+          predicates:
+            - Path=/api/v1/proyectos/**
+
+        - id: notas-route-5
+          uri: lb://nota-service
+          predicates:
+            - Path=/api/v1/notas/**
+
+        - id: metas-route-6
+          uri: lb://meta-service
+          predicates:
+            - Path=/api/v1/metas/**
+
+        - id: habitos-route-7
+          uri: lb://habito-service
+          predicates:
+            - Path=/api/v1/habitos/**
+
+        - id: pomodoros-route-8
+          uri: lb://pomodoro-service
+          predicates:
+            - Path=/api/v1/pomodoros/**
+
+        - id: dashboard-route-9
+          uri: lb://dashboard-service
+          predicates:
+            - Path=/api/v1/dashboard/**
+
+
+        - id: swagger-usuario-docs
+          uri: lb://usuario-service
+          predicates:
+            - Path=/docs/usuario/v3/api-docs
+          filters:
+            - RewritePath=/docs/usuario/(?<segment>.*), /$\{segment}
+
+        - id: swagger-tarea-docs
+          uri: lb://tarea-service
+          predicates:
+            - Path=/docs/tareas/v3/api-docs
+          filters:
+            - RewritePath=/docs/tareas/(?<segment>.*), /$\{segment}
+
+        - id: swagger-proyecto-docs
+          uri: lb://proyecto-service
+          predicates:
+            - Path=/docs/proyectos/v3/api-docs
+          filters:
+            - RewritePath=/docs/proyectos/(?<segment>.*), /$\{segment}
+
+        - id: swagger-nota-docs
+          uri: lb://nota-service
+          predicates:
+            - Path=/docs/notas/v3/api-docs
+          filters:
+            - RewritePath=/docs/notas/(?<segment>.*), /$\{segment}
+
+        - id: swagger-meta-docs
+          uri: lb://meta-service
+          predicates:
+            - Path=/docs/metas/v3/api-docs
+          filters:
+            - RewritePath=/docs/metas/(?<segment>.*), /$\{segment}
+
+        - id: swagger-habito-docs
+          uri: lb://habito-service
+          predicates:
+            - Path=/docs/habitos/v3/api-docs
+          filters:
+            - RewritePath=/docs/habitos/(?<segment>.*), /$\{segment}
+
+        - id: swagger-pomodoro-docs
+          uri: lb://pomodoro-service
+          predicates:
+            - Path=/docs/pomodoros/v3/api-docs
+          filters:
+            - RewritePath=/docs/pomodoros/(?<segment>.*), /$\{segment}
+
+        - id: swagger-dashboard-docs
+          uri: lb://dashboard-service
+          predicates:
+            - Path=/docs/dashboard/v3/api-docs
+          filters:
+            - RewritePath=/docs/dashboard/(?<segment>.*), /$\{segment}
+
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_SERVER_URL:http://localhost:7081/eureka/}
+  instance:
+    prefer-ip-address: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,gateway
+
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+    disable-swagger-default-url: true
+    urls:
+      - name: 01 - Usuario Service
+        url: /docs/usuario/v3/api-docs
+      - name: 02 - Tarea Service
+        url: /docs/tareas/v3/api-docs
+      - name: 03 - Proyecto Service
+        url: /docs/proyectos/v3/api-docs
+      - name: 04 - Nota Service
+        url: /docs/notas/v3/api-docs
+      - name: 05 - Meta Service
+        url: /docs/metas/v3/api-docs
+      - name: 06 - Habito Service
+        url: /docs/habitos/v3/api-docs
+      - name: 07 - Pomodoro Service
+        url: /docs/pomodoros/v3/api-docs
+      - name: 08 - Dashboard Service
+        url: /docs/dashboard/v3/api-docs

@@ -1,0 +1,39 @@
+server:
+  port: 8085
+
+spring:
+  datasource:
+    url: jdbc:mysql://${META_DB_HOST:localhost}:${META_DB_PORT:3315}/${META_DB_NAME:db_nevoa_meta}?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    username: ${META_DB_USERNAME:root}
+    password: ${META_DB_PASSWORD:root}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+  flyway:
+    enabled: false
+    locations: classpath:db/migration
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_SERVER_URL:http://localhost:7081/eureka/}
+  instance:
+    prefer-ip-address: true
+
+springdoc:
+  api-docs:
+    enabled: true
+    path: /v3/api-docs
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
